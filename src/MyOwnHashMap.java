@@ -47,7 +47,51 @@ public class MyOwnHashMap<K, V> {
         return hash & (capacity - 1);
     }
 
+    public V put(K key, V value) {
+        // TODO: рехешировать при переполнении словаря
+
+        int hash = hash(key);
+        int index = getBucketIndex(hash);
+        Bucket<K, V> cur = buckets[index];
+
+        // Если ключ уже есть
+        while (cur != null) {
+            if (cur.hash == hash && Objects.equals(cur.key, key)) {
+                V oldValue = cur.value;
+                cur.value = value;
+                return oldValue;
+            }
+            cur = cur.next;
+        }
+
+        Bucket<K, V> newBucket = new Bucket<>(key, value, hash);
+        newBucket.next = buckets[index];
+        buckets[index] = newBucket;
+        size++;
+        return null;
+    }
+
+    public void print() {
+        for (int i = 0; i < capacity; i++) {
+            Bucket<K, V> cur = buckets[i];
+            System.out.print(i + ": ");
+            while (cur != null) {
+                System.out.print("{" + cur.key + " : " + cur.value + "} -> ");
+                cur = cur.next;
+            }
+            System.out.println("null");
+        }
+    }
+
+
     static void main() {
-        System.out.println("hell");
+        MyOwnHashMap<String, Integer> map = new MyOwnHashMap<>();
+
+        map.put("jan", 1);
+        map.put("feb", 200);
+        map.put("feb", 2);
+        map.put("dec", 3);
+
+        map.print();
     }
 }
