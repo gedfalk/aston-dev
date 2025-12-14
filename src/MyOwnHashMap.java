@@ -71,6 +71,49 @@ public class MyOwnHashMap<K, V> {
         return null;
     }
 
+    public V get(K key) {
+        int hash = hash(key);
+        int index = getBucketIndex(hash);
+        Bucket<K, V> cur = buckets[index];
+
+        while (cur != null) {
+            if (cur.hash == hash && Objects.equals(cur.key, key)) {
+                return cur.value;
+            }
+            cur = cur.next;
+        }
+
+        return null;
+    }
+
+    public V remove(K key) {
+        int hash = hash(key);
+        int index = getBucketIndex(hash);
+
+        Bucket<K, V> cur = buckets[index];
+        Bucket<K, V> prev = null;
+
+        while (cur != null) {
+            if (cur.hash == hash && Objects.equals(cur.key, key)) {
+                V oldValue = cur.value;
+
+                if (prev == null) {
+                    buckets[index] = cur.next;
+                } else {
+                    prev.next = cur.next;
+                }
+
+                size--;
+                return oldValue;
+            }
+
+            prev = cur;
+            cur = cur.next;
+        }
+
+        return null;
+    }
+
     public void print() {
         for (int i = 0; i < capacity; i++) {
             Bucket<K, V> cur = buckets[i];
@@ -90,8 +133,12 @@ public class MyOwnHashMap<K, V> {
         map.put("jan", 1);
         map.put("feb", 200);
         map.put("feb", 2);
-        map.put("dec", 3);
+        map.put("dec", 30);
+        map.remove("dec");
+        map.put("apr", 4);
 
         map.print();
+
+        System.out.println(map.get("apr"));
     }
 }
