@@ -2,7 +2,7 @@ import java.util.Objects;
 
 public class MyOwnHashMap<K, V> {
     private static final int CAPACITY = 8;
-    private static final double EXPAND_NUM = 0.8;
+    private static final double EXPAND_NUM = 0.75;
     private Bucket<K, V>[] buckets;
     public int capacity = CAPACITY;
     private int size;
@@ -48,7 +48,9 @@ public class MyOwnHashMap<K, V> {
     }
 
     public V put(K key, V value) {
-        // TODO: рехешировать при переполнении словаря
+        if (size >= EXPAND_NUM * capacity) {
+            rehash();
+        }
 
         int hash = hash(key);
         int index = getBucketIndex(hash);
@@ -114,6 +116,20 @@ public class MyOwnHashMap<K, V> {
         return null;
     }
 
+    public void rehash() {
+        Bucket<K, V>[] oldBuckets = buckets;
+        capacity *= 2;
+        buckets = new Bucket[capacity];
+        size = 0;
+
+        for (Bucket<K, V> bucket : oldBuckets) {
+            while (bucket != null) {
+                put(bucket.key, bucket.value);
+                bucket = bucket.next;
+            }
+        }
+    }
+
     public void print() {
         for (int i = 0; i < capacity; i++) {
             Bucket<K, V> cur = buckets[i];
@@ -135,10 +151,14 @@ public class MyOwnHashMap<K, V> {
         map.put("feb", 2);
         map.put("dec", 30);
         map.remove("dec");
-        map.put("apr", 4);
-
         map.print();
-
         System.out.println(map.get("apr"));
+
+        map.put("mar", 3);
+        map.put("may", 5);
+        map.put("jun", 6);
+        map.put("jul", 7);
+        map.put("aug", 8);
+        map.print();
     }
 }
