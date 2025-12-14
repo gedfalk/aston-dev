@@ -32,6 +32,21 @@ public class MyOwnHashMap<K, V> {
         buckets = new Bucket[capacity];
     }
 
+    private void checkKeyNotNull(K key) {
+        if (key == null) {
+            throw new NullPointerException("Не можем использовать null в качестве ключа... сорри(");
+        }
+    }
+
+    private int hash(K key) {
+        checkKeyNotNull(key);
+        return key.hashCode();
+    }
+
+    private int getBucketIndex(int hash) {
+        return hash & (capacity - 1);
+    }
+
     static void main() {
         System.out.println("hell");
     }
